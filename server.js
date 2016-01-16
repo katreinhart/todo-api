@@ -19,7 +19,7 @@ app.get('/todos', function (req, res) {
 
 
 app.get('/todos/:id', function (req, res){
-	var todoId = req.params.id;
+	var todoId = parseInt(req.params.id);
 	var matchedTodo = _.findWhere(todos, {id: todoId});
 
 // 	for(var i=0; i<todos.length; i++){
@@ -30,9 +30,9 @@ app.get('/todos/:id', function (req, res){
 // 	}
 	
 	if(matchedTodo){
-		res.json(matchedTodo);
+		res.json(matchedTodo).send();
 	} else {
-		 res.status(404).send(); // if there is no match send a 404
+		res.status(404).send(); // if there is no match send a 404
 	}
 
 } );
