@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var _ = require('underscore');
 
 var app = express();
 var PORT = process.env.PORT || 3000;
@@ -16,26 +17,24 @@ app.get('/todos', function (req, res) {
 	res.json(todos);
 });
 
-// get /todos/:id
+
 app.get('/todos/:id', function (req, res){
 	var todoId = req.params.id;
-	var matchedTodo;
-//	iterate over todos array and find match
+	var matchedTodo = _.findWhere(todos, {id: todoId});
+
+// 	for(var i=0; i<todos.length; i++){
+// 		if(todos[i].id == todoId){ // use this instead of parseInt? 
+// 			matchedTodo = todos[i];
+// 			res.json(matchedTodo); //is it bad to call this inside the iterator?
+// 		}
+// 	}
 	
-	for(var i=0; i<todos.length; i++){
-		if(todos[i].id == todoId){ // use this instead of parseInt? 
-			matchedTodo = todos[i];
-			res.json(matchedTodo); //is it bad to call this inside the iterator?
-		}
-	}
-	
-	if(!matchedTodo){
+	if(matchedTodo){
+		res.json(matchedTodo);
+	} else {
 		 res.status(404).send(); // if there is no match send a 404
 	}
-	
-//	res.send('Asking for todo with id of ' + req.params.id);
-	
-	
+
 } );
 
 // POST /todos
