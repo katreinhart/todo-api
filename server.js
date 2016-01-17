@@ -14,8 +14,6 @@ app.get('/', function (req, res) {
 	res.send('Todo API Root');
 });
 
-// GET /todos?completed=true&q=work
-
 app.get('/todos', function (req, res) {
 	var query = req.query;
 	var where = {};
@@ -44,7 +42,6 @@ app.get('/todos', function (req, res) {
 
 app.get('/todos/:id', function (req, res){
 	var todoId = parseInt(req.params.id, 10);
-	console.log('Looking for todo with id ' + todoId.toString());
 	db.todo.findById(todoId).then(function(todo){
 			if(!!todo){
 				res.json(todo.toJSON());
@@ -59,7 +56,6 @@ app.get('/todos/:id', function (req, res){
 
 app.post( '/todos', function( req, res ) {
 	var body = _.pick(req.body, 'description', 'completed');
-	// ihavenoideawhatimdoingdog.jpg
 
 	db.todo.create(body).then(function(todo){
 		res.json(todo.toJSON());
