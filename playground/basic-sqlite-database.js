@@ -33,8 +33,6 @@ sequelize.sync({
             console.log(todo.toJSON());
         }else{
             console.log('Todo not found');
-            
-            
         }
         
     });
