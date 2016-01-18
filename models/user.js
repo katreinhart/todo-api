@@ -16,6 +16,13 @@ module.exports = function(sequelize, DataTypes){
         // look at validate regex section in sequelize to include more complex validations
       }
     }
+  },{
+      hooks: {
+        beforeValidate: function(user, options) {
+          if(typeof user.email === 'string'){
+            user.email = user.email.toLowerCase();
+          }
+        }
+      }
   });
-
 };
