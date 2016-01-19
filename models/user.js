@@ -64,6 +64,7 @@ module.exports = function(sequelize, DataTypes){
 
               return token;
             } catch (e) {
+              // console.log(e);
               return undefined;
             }
           }
@@ -81,13 +82,35 @@ module.exports = function(sequelize, DataTypes){
             		}
             	}).then(function(user){
             		if(!user || !bcrypt.compareSync(body.password, user.get('password_hash'))){
-            			return reject();
+                  return reject();
             		}
             		resolve(user);
             	}, function(e){
+                //console.log(e);
             		reject();
             	});
           });
+        },
+        findByToken: function(token) {
+            return new Promise (function (resolve, reject) {
+                try {
+                    var decodedJWT = jwt.verify(token, 'qwerty098');
+                    var bytes = cryptojs.AES.decrypt(decodedJWT.token, 'abc123!@#');
+                    var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
+
+                    user.findById(tokenData.id).then(function(user){
+                        if (user){
+                          resolve(user);
+                        } else{
+                          reject();
+                        }
+                    }, function(e){
+                        reject();
+                    });
+                } catch (e) {
+                    reject();
+                }
+            });
         }
       }
   });

@@ -4,6 +4,8 @@ var _ = require('underscore');
 var db = require('./db.js');
 var bcrypt = require('bcrypt');
 
+var middleware = require('./middleware.js')(db);
+
 var app = express();
 var PORT = process.env.PORT || 3000;
 var todos = [];
@@ -15,7 +17,7 @@ app.get('/', function (req, res) {
 	res.send('Todo API Root');
 });
 
-app.get('/todos', function (req, res) {
+app.get('/todos', middleware.requireAuthentication, function (req, res) {
 	var query = req.query;
 	var where = {};
 
@@ -41,7 +43,7 @@ app.get('/todos', function (req, res) {
 });
 
 
-app.get('/todos/:id', function (req, res){
+app.get('/todos/:id',  middleware.requireAuthentication, function (req, res){
 	var todoId = parseInt(req.params.id, 10);
 	db.todo.findById(todoId).then(function(todo){
 			if(!!todo){
@@ -55,7 +57,7 @@ app.get('/todos/:id', function (req, res){
 });
 
 
-app.post( '/todos', function( req, res ) {
+app.post( '/todos',  middleware.requireAuthentication, function( req, res ) {
 	var body = _.pick(req.body, 'description', 'completed');
 
 	db.todo.create(body).then(function(todo){
@@ -67,7 +69,7 @@ app.post( '/todos', function( req, res ) {
 });
 
 
-app.delete( '/todos/:id', function (req, res) {
+app.delete( '/todos/:id',  middleware.requireAuthentication, function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
 
 	db.todo.findById(todoId).then(function(todo){
@@ -82,7 +84,7 @@ app.delete( '/todos/:id', function (req, res) {
 	});
 });
 
-app.put( '/todos/:id', function (req, res) {
+app.put( '/todos/:id',  middleware.requireAuthentication, function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
 	var body = _.pick(req.body, 'description', 'completed');
 
@@ -123,10 +125,11 @@ app.post('/users', function(req, res){
 // post method /users/login
 app.post('/users/login', function(req, res){
 	var body = _.pick(req.body, 'email', 'password');
-
 	db.user.authenticate(body).then( function (user){
-		res.header('Auth', user.generateToken('authentication')).json(user.toPublicJSON());
+		var token = user.generateToken('authentication');
+		res.header('Auth', token).json(user.toPublicJSON());
 	}, function (e) {
+		console.log(e);
 		res.status(401).send();
 	});
 
