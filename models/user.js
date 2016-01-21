@@ -4,7 +4,6 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 
 module.exports = function(sequelize, DataTypes){
-  // return sequelize.define('user', {
   var user = sequelize.define('user', {
     email: {
       type: DataTypes.STRING,
@@ -64,7 +63,6 @@ module.exports = function(sequelize, DataTypes){
 
               return token;
             } catch (e) {
-              // console.log(e);
               return undefined;
             }
           }
@@ -86,7 +84,6 @@ module.exports = function(sequelize, DataTypes){
             		}
             		resolve(user);
             	}, function(e){
-                //console.log(e);
             		reject();
             	});
           });
